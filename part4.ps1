@@ -124,13 +124,13 @@ $data = @{
 $batchSize = 1000000
 
 Measure-Command {
-    foreach($num in 1..$batchSize)
+    foreach ($num in 1..$batchSize)
     {
         $data.Name
     }
 }
 Measure-Command {
-    foreach($num in 1..$batchSize)
+    foreach ($num in 1..$batchSize)
     {
         $data['Name']
     }
@@ -141,18 +141,18 @@ Measure-Command {
 #region getEnumerator() no measurable difference
 $batchSize = 100000
 $hashtable = @{}
-foreach($num in 1..$batchSize)
+foreach ($num in 1..$batchSize)
 {
     $hashtable[$num] = $num * 2
 }
 Measure-Command {
-    foreach($key in $hashtable.Keys)
+    foreach ($key in $hashtable.Keys)
     {
         $hashtable[$key] 
     }
 }
 Measure-Command {
-    foreach($item in $hashtable.GetEnumerator())
+    foreach ($item in $hashtable.GetEnumerator())
     {
         $item.value
     }
@@ -163,16 +163,16 @@ Measure-Command {
 #region pre-size 
 $batchSize = 10000000
 $empty = @{}
-$presized = [System.Collections.Generic.Dictionary[string,string]]::new(($batchSize * 1.5))
+$presized = [System.Collections.Generic.Dictionary[string, string]]::new(($batchSize * 1.5))
 
 Measure-Command {
-    foreach($num in 1..$batchSize)
+    foreach ($num in 1..$batchSize)
     {
         $empty[$num] = $num * 2
     }
 }
 Measure-Command {
-    foreach($num in 1..$batchSize)
+    foreach ($num in 1..$batchSize)
     {
         $presized[$num] = $num * 2
     }
