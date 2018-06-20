@@ -1,116 +1,18 @@
-# Performance
+# Group-Object as hashtable
+Get-ChildItem
 
-# test data
-$servers = foreach($index in 1..1000)
-{
-    [pscustomobject]@{
-        Name = "Server$index"
-        SiteID = ($index % 6 * 2)
-    }
-}
+$files = Get-ChildItem | 
+    Group-Object -AsHashTable -Property Name
+$files
 
+$files['Part1.ps1']
+$files['Part1.ps1'].fullname
 
-# walking a collection of data
-# using JSON but could be a CSV import
-$json = @'
-[
-    {"Name":"ATX","ID":"0"},
-    {"Name":"LAX","ID":"2"}, 
-    {"Name":"DEN","ID":"4"}, 
-    {"Name":"OMA","ID":"6"}, 
-    {"Name":"CHI","ID":"8"}, 
-    {"Name":"REN","ID":"10"} 
-]
-'@
+# -AsString
+$files = Get-ChildItem | 
+    Group-Object -AsHashTable -Property Basename -AsString
 
-$lookupArray = $json | convertfrom-json
-$lookupArray
-
-Measure-Command {
-    foreach($server in $servers){
-        @{
-            Name = $server.name
-            Location = ($lookupArray | where ID -eq $server.siteID).Name
-        }  
-    }
-}
-
-Measure-Command {
-    foreach($server in $servers){
-        foreach($location in $lookupArray){
-            if($server.SiteID -eq $location.ID){
-                @{
-                    Name = $server.name
-                    Location = $location.name
-                }
-            }
-        }
-    }
-}
-
-
-
-# hashtable lookups
-$lookupHash = @{
-    0 = 'ATX'
-    2 = 'LAX'
-    4 = 'DEN'
-    5 = 'OMA'
-    6 = 'CHI'
-    8 = 'REN'
-}
-$lookupHash
-
-Measure-Command {
-    foreach($server in $servers){    
-        @{
-            Name = $server.name
-            Location = $lookupHash[$server.SiteID]
-        }          
-    }
-}
-
-
-
-
-# Pass by refference and Shallow copies
-# value types
-$orig = 1
-$copy = $orig
-$copy = 2
-'Copy: [{0}]' -f $copy
-'Orig: [{0}]' -f $orig
-
-
-# Reference types
-$orig = @{name='orig'}
-$copy = $orig
-$copy.name = 'copy'
-'Copy: [{0}]' -f $copy.name
-'Orig: [{0}]' -f $orig.name
-
-
-
-# Shallow copies, single level
-$orig = @{name='orig'}
-$copy = $orig.Clone()
-$copy.name = 'copy'
-'Copy: [{0}]' -f $copy.name
-'Orig: [{0}]' -f $orig.name
-
-
-
-# Shallow copies, nested
-$orig = @{
-    person=@{
-        name='orig'
-    }
-}
-$copy = $orig.Clone()
-$copy.person.name = 'copy'
-'Copy: [{0}]' -f $copy.person.name
-'Orig: [{0}]' -f $orig.person.name
-
+$files['Part1'].fullname
 
 
 # special hashtables
@@ -121,10 +23,11 @@ function test-param
     param(
         $First = 1
     )
-    If($First -ne $null){
+    if ($null -ne $First)
+    {
         "First has a value of $first"
     }
-    If($PSBoundParameters['First'] -ne $null)
+    if ($null -ne $PSBoundParameters['First'])
     {
         "The passed in value of First is $First"
     }
@@ -147,7 +50,6 @@ function Get-ProxyWMIObject
         $ComputerName
     )
     Get-WmiObject @PSBoundParameters
-    
 }
 
 Get-ProxyWMIObject  -Class WIN32_BIOS
@@ -156,20 +58,22 @@ Get-ProxyWMIObject  -Class WIN32_BIOS
 # PSDefaultParameterValues
 $PSDefaultParameterValues[ "Connect-VIServer:Server" ] = 'VCENTER01.contoso.local'
 
-$PSDefaultParameterValues["Out-File:Encoding"] = "UTF8"
+$PSDefaultParameterValues[ "Format-Table:AutoSize" ] = $true
+$PSDefaultParameterValues[ "Out-File:Encoding" ]     = "UTF8"
 
+# With wildcards
 $PSDefaultParameterValues[ "Get-*:Verbose" ] = $true
-$PSDefaultParameterValues[ "*:Credential" ] = Get-Credental
+$PSDefaultParameterValues[ "*:Credential" ]  = Get-Credental
+$PSDefaultParameterValues[ "*-AD*:Server" ]  = 'Lab.domain'
 
 
 # regex matches
 
 $message = 'My SSN is 123-45-6789.'
 
-if($message -match 'My SSN is (.+)\.'){
-    $Matches[0]
-    $Matches[1]
-}
+$message -match 'My SSN is (.+)\.'
+$Matches[0]
+$Matches[1]
 
 # Named matches
 $message = 'My SSN is 123-45-6789.'
@@ -183,3 +87,38 @@ $message -match 'My Name is (?<Name>.+) and my SSN is (?<SSN>.+)\.'
 $Matches.Name
 $Matches.SSN
 
+
+# Hashmap
+$data = 1..8 | Get-Random -Count 4
+
+$hashtable = @{}
+$data | ForEach-Object {
+    $hashtable[$PSItem] = $true
+}
+foreach($number in 1..8)
+{
+    if($hashtable.Contains($number))
+    {
+        "$number is a winner"
+    }
+    else
+    {
+        "$number is a loser"
+    }
+}
+
+$set = [System.Collections.Generic.HashSet[int]]::new()
+$data | ForEach-Object {
+    [void]$set.Add($PSItem)
+}
+foreach($number in 1..8)
+{
+    if($set.Contains($number))
+    {
+        "$number is a winner"
+    }
+    else
+    {
+        "$number is a loser"
+    }
+}

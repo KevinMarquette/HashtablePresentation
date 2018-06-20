@@ -1,23 +1,20 @@
 # Introduction to hashtables
 # Basic Arrays and Collections
-$array = @(10,11,12,13,15,17,19)
+$array = @(10, 11, 12, 13, 15, 17, 19)
 
 $array[0]
 $array[1]
 
 $array | ForEach-Object {$_ * 2}
 
-
-
-
 $array[1] = 33
 $array[1]
 
 
 $array = @(
-    'zero',
-    'one',
-    'two',
+    'zero'
+    'one'
+    'two'
     'three'
 )
 
@@ -28,9 +25,10 @@ $array[2]
 # What is a hashtable?
 
 <# Technical description
-        A hashtable is a data structure much like an array, 
-        except you store each value (object) using a key. 
-        It is a basic key/value store.
+    A hashtable is a data structure much like an array, 
+    except you store each value (object) using a key. 
+    It is a basic key/value store.
+    Like classic C# Dictionary collection.
  #>
 
 
@@ -52,7 +50,7 @@ $ageList['Kevin']
 $ageList['Alex']
 
 
-# Use Bracket to create a hashtable
+# Use Bracket to update a hashtable
 $ageList = @{}
 
 $key = 'Kevin'
@@ -60,6 +58,7 @@ $value = 37
 $ageList[$key] = $value
 
 $ageList['Alex'] = 9
+$ageList
 
 
 # Creating hashtables with values
@@ -79,38 +78,58 @@ $environments = @{
 
 $env = 'QA'
 $server = $environments[$env]
+$server
 
 
-# Iterating hashtables
+# Multi-selection
+$environments['DEV', 'QA']
+
+$env = 'DEV', 'QA'
+$environments[$env]
+
+# null value for misses
+$environments['MissingEnvironment']
+
+
+# Iterating hashtables, walking the list
 $ageList = @{
     "Kevin" = 37
     "Alex"  = 9
 }
 
-$ageList | Measure-Object
+$ageList | Measure-Object | 
+    Select-Object Count
 
-$ageList.count
+$ageList.Count
+    
+$ageList | Get-Member
 
-$agelist.values
+$agelist.Values
 
-$agelist.keys
+$agelist.Keys
 
 
-$ageList.keys | ForEach-Object{
+$ageList.Keys | ForEach-Object {
     '{0} is {1} years old!' -f $PSItem, $ageList[$PSItem]
 }
 
-foreach($key in $ageList.keys)
+foreach ($key in $ageList.Keys)
 {
     '{0} is {1} years old' -f $key, $ageList[$key]
 }
 
 
 # GetEnumerator()
-$ageList.GetEnumerator() | ForEach-Object{
+$ageList.GetEnumerator() | Get-Member
+
+$ageList.GetEnumerator() | ForEach-Object {
     '{0} is {1} years old!' -f $PSItem.key, $PSItem.value
 }
 
+foreach ( $enumerator in $ageList.GetEnumerator() )
+{
+    '{0} is {1} years old' -f $enumerator.key, $enumerator.value
+}
 
 # Bad Enumeration example: will throw error
 $environments = @{
@@ -122,21 +141,32 @@ $environments = @{
 $environments.Keys | ForEach-Object {
     $environments[$PSItem] = 'SrvDev03'
 } 
+# An error occurred while enumerating through a collection: 
+# Collection was modified; enumeration operation may not execute.
 
-#solution
+foreach ($key in $environments.Keys) 
+{
+    $environments[$key] = 'SrvDev03'
+} 
+# Collection was modified; enumeration operation may not execute.
+
+# Solution
 $environments.Keys.Clone() | ForEach-Object {
     $environments[$PSItem] = 'SrvDev03'
 } 
 
-$environments
+foreach ($key in $environments.Keys.Clone()) 
+{
+    $environments[$key] = 'SrvDev03'
+} 
 
 
 # Hashtable as a collection of properties
 # property based access
 $ageList = @{}
-$ageList['Kevin'] = 37
 $ageList.Kevin = 37
-$ageList.Alex = 9
+$ageList.Alex  = 9
+$ageList
 
 # new example
 $person = @{
@@ -148,11 +178,13 @@ $person.city = 'Irvine'
 $person.state = 'CA'
 
 # checking for keys and values
-if( $person['age'] ){'...'}
+if ( $person.age ) {'...'}
 
-if( $person[$key] -ne $null ){'...'}
+if ( $person.age -ne $null ) {'...'}
+if ( $null -ne $person.age ) {'...'}
 
-if( $person.ContainsKey('age') ){'...'}
+if ( $person.Contains('age') ) {'...'}
+if ( $person.ContainsKey('age') ) {'...'}
 
 
 # removing keys
@@ -163,4 +195,3 @@ $person.remove('age')
 $person = @{}
 
 $person.clear()
-

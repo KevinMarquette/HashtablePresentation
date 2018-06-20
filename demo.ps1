@@ -6,12 +6,17 @@
 # kevinmarquette.github.io
 # github.com/kevinmarquette
 
-# basic features
-ise .\part1.ps1
+# general syntax
+code .\part1.ps1
 
-# general usage
-ise .\part2.ps1
+# deeper concepts
+code .\part2.ps1
 
-# performance and deep dive
-ise .\part3.ps1
+# special hashtables
+code .\part3.ps1
 
+# Performance
+code .\part4.ps1
+
+# other
+code .\null.ps1
