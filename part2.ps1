@@ -11,7 +11,7 @@ $person = @{ name = 'kevin'; age = 37; }
 
 
 # Custom expressions in common pipeline commands
-$drives = Get-PSDrive | Where Used 
+$drives = Get-PSDrive | Where Used
 $drives | Get-Member
 $drives | Select-Object Name, @{n = 'totalSpaceGB'; e = { ($_.used + $_.free) / 1GB }}
 
@@ -47,7 +47,7 @@ $CIMParams = @{
     ComputerName = $ComputerName
 }
 
-if ($Credential)
+if ($null -ne $Credential)
 {
     $CIMParams.Credential = $Credential
 }
@@ -55,7 +55,7 @@ if ($Credential)
 Get-CIMInstance @CIMParams
 
 
-# Adding hashtables
+# Adding hashtables (once)
 $person += @{Zip = '78701'}
 
 
@@ -81,7 +81,7 @@ $person = @{
 $person.location.city
 
 # more nesting
-$people = @{
+$people = [ordered]@{
     Kevin = @{
         age  = 37
         city = 'Irvine'
@@ -109,7 +109,7 @@ foreach ($name in $people.keys)
 # Looking at nested hashtables
 $people
 
-$people | ConvertTo-Json    
+$people | ConvertTo-Json
 
 # Creating arrays of hashtables
 $peopleArray = @(
@@ -124,7 +124,7 @@ $peopleArray = @(
         city = 'Irvine'
     }
 )
-$peopleArray | ConvertTo-Json  
+$peopleArray | ConvertTo-Json
 
 # Sorting arrays of hashtables
 $peopleArray | Sort-Object Name # incorrect
@@ -147,12 +147,12 @@ $person = @{
 [pscustomobject]$person
 
 # sorting cast to pscustombojects and sort
-$peopleArray | ForEach-Object {[pscustomobject]$PSItem} | 
+$peopleArray | ForEach-Object {[pscustomobject]$PSItem} |
     Sort-Object Name
 
-    
+
 # Saving to CSV
-$person | ForEach-Object { [pscustomobject]$PSItem } | 
+$person | ForEach-Object { [pscustomobject]$PSItem } |
     Export-CSV -Path $path
 
 
@@ -176,16 +176,16 @@ $path = '.\data\person.psd1'
 $content = Get-Content -Path $Path -Raw -ErrorAction Stop
 $scriptBlock = [scriptblock]::Create( $content )
 $scriptBlock.CheckRestrictedLanguage( $allowedCommands, $allowedVariables, $true )
-$hashtable = ( & $scriptBlock ) 
+$hashtable = ( & $scriptBlock )
 
-# Magic using transformation attributes 
+# Magic using transformation attributes
 # https://kevinmarquette.github.io/2017-02-20-Powershell-creating-parameter-validators-and-transforms/
 [Microsoft.PowerShell.DesiredStateConfiguration.ArgumentToConfigurationDataTransformationAttribute()]
 $hashtable = '.\data\person.psd1'
-$hashtable 
+$hashtable
 
 
-# Keys are just strings
+# Reminder, keys are just strings
 $person = @{
     'full name' = 'Kevin Marquette'
     '#'         = 3978

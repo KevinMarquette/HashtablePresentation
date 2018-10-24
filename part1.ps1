@@ -57,7 +57,7 @@ $key = 'Kevin'
 $value = 37
 $ageList[$key] = $value
 
-$ageList['Alex'] = 9
+$ageList['Alex'] = 10
 $ageList
 
 
@@ -88,7 +88,7 @@ $env = 'DEV', 'QA'
 $environments[$env]
 
 # null value for misses
-$environments['MissingEnvironment']
+$environments['MissingEnvironment'] -eq $null
 
 
 # Iterating hashtables, walking the list
@@ -108,7 +108,7 @@ $agelist.Values
 
 $agelist.Keys
 
-
+# $PSItem is also $_
 $ageList.Keys | ForEach-Object {
     '{0} is {1} years old!' -f $PSItem, $ageList[$PSItem]
 }
@@ -121,6 +121,8 @@ foreach ($key in $ageList.Keys)
 
 # GetEnumerator()
 $ageList.GetEnumerator() | Get-Member
+$ageList.GetEnumerator() | Measure-Object
+
 
 $ageList.GetEnumerator() | ForEach-Object {
     '{0} is {1} years old!' -f $PSItem.key, $PSItem.value

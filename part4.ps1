@@ -78,7 +78,7 @@ foreach ($server in $ServerInfo)
         Status       = $patchInfo.Status
         #...
     }
-}
+} | Select TotalMilliseconds
 
 #region csv merge Measure-Command
 Measure-Command {
@@ -94,7 +94,7 @@ Measure-Command {
             #...
         }
     } 
-}
+} | Select TotalMilliseconds
 
 Measure-Command {
     $lookup = $ServerPatches | 
@@ -111,7 +111,7 @@ Measure-Command {
             #...
         }
     }
-}
+} | Select TotalMilliseconds
 #endregion
 #endregion
 
@@ -128,13 +128,13 @@ Measure-Command {
     {
         $data.Name
     }
-}
+} | Select TotalMilliseconds
 Measure-Command {
     foreach ($num in 1..$batchSize)
     {
         $data['Name']
     }
-}
+} | Select TotalMilliseconds
 
 #endregion
 
@@ -155,26 +155,6 @@ Measure-Command {
     foreach ($item in $hashtable.GetEnumerator())
     {
         $item.value
-    }
-}
-#endregion
-
-
-#region pre-size 
-$batchSize = 10000000
-$empty = @{}
-$presized = [System.Collections.Generic.Dictionary[string, string]]::new(($batchSize * 1.5))
-
-Measure-Command {
-    foreach ($num in 1..$batchSize)
-    {
-        $empty[$num] = $num * 2
-    }
-}
-Measure-Command {
-    foreach ($num in 1..$batchSize)
-    {
-        $presized[$num] = $num * 2
     }
 }
 #endregion
