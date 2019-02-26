@@ -110,7 +110,7 @@ $agelist.Keys
 
 # $PSItem is also $_
 $ageList.Keys | ForEach-Object {
-    '{0} is {1} years old!' -f $PSItem, $ageList[$PSItem]
+    '{0} is {1} years old!' -f $_, $ageList[$_]
 }
 
 foreach ($key in $ageList.Keys)

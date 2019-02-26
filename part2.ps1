@@ -7,13 +7,13 @@ $person = [ordered]@{
 
 
 # Inline
-$person = @{ name = 'kevin'; age = 37; }
+$person = @{ name = 'Kevin'; age = 37; }
 
 
 # Custom expressions in common pipeline commands
 $drives = Get-PSDrive | Where Used
 $drives | Get-Member
-$drives | Select-Object Name, @{n = 'totalSpaceGB'; e = { ($_.used + $_.free) / 1GB }}
+$drives | Select-Object Name, @{name = 'totalSpaceGB'; expression = { ($_.used + $_.free) / 1GB }}
 
 
 # Expanded
@@ -128,7 +128,7 @@ $peopleArray | ConvertTo-Json
 
 # Sorting arrays of hashtables
 $peopleArray | Sort-Object Name # incorrect
-$peopleArray | Sort-Object @{e={$_.name}}
+$peopleArray | Sort-Object @{expression={$_.name}}
 
 # Creating objects
 $person = [pscustomobject]@{
@@ -165,6 +165,7 @@ $people = Get-Content -Path $path -Raw | ConvertFrom-JSON
 [Reflection.Assembly]::LoadWithPartialName("System.Web.Script.Serialization")
 $JSSerializer = [System.Web.Script.Serialization.JavaScriptSerializer]::new()
 $JSSerializer.Deserialize($json, 'Hashtable')
+
 
 # Convert JSON to Hashtable (PS 6)
 $json = $people | ConvertTo-JSON
