@@ -2,18 +2,21 @@
 # Ordered hashtables
 $person = [ordered]@{
     name = 'Kevin'
-    age  = 37
+    age  = 40
 }
 
 
 # Inline
-$person = @{ name = 'Kevin'; age = 37; }
+$person = @{ name = 'Kevin'; age = 40; }
 
 
 # Custom expressions in common pipeline commands
-$drives = Get-PSDrive | Where Used
+Get-PSDrive | Where Used -OutVariable drives
 $drives | Get-Member
-$drives | Select-Object Name, @{name = 'totalSpaceGB'; expression = { ($_.used + $_.free) / 1GB }}
+$drives | Select-Object Name, @{
+    name = 'totalSpaceGB'; 
+    expression = { ($_.used + $_.free) / 1GB }
+}
 
 
 # Expanded
@@ -27,6 +30,7 @@ $drives | Select-Object Name, $property
 
 # Splatting
 Add-DhcpServerv4Scope -Name 'TestNetwork' -StartRange '10.0.0.2' -EndRange '10.0.0.254' -SubnetMask '255.255.255.0' -Description 'Network for testlab A' -LeaseDuration (New-TimeSpan -Days 8) -Type "Both"
+
 
 
 $DHCPScope = @{
@@ -57,24 +61,25 @@ Get-CIMInstance @CIMParams
 
 # Adding hashtables (once)
 $person += @{Zip = '78701'}
+$person
 
 
 # Nested hashtables
 $person = @{
     name = 'Kevin'
-    age  = 37
+    age  = 40
 }
 $person.location = @{}
-$person.location.city = 'Irvine'
-$person.location.state = 'CA'
-
+$person.location.city = 'Bellevue'
+$person.location.state = 'WA'
+$person
 
 $person = @{
     name     = 'Kevin'
-    age      = 37
+    age      = 40
     location = @{
-        city  = 'Irvine'
-        state = 'CA'
+        city  = 'Bellevue'
+        state = 'WA'
     }
 }
 
@@ -83,12 +88,12 @@ $person.location.city
 # more nesting
 $people = [ordered]@{
     Kevin = @{
-        age  = 37
-        city = 'Irvine'
+        age  = 40
+        city = 'Bellevue'
     }
     Alex  = @{
-        age  = 9
-        city = 'Irvine'
+        age  = 13
+        city = 'Bellevue'
     }
 }
 
@@ -109,19 +114,20 @@ foreach ($name in $people.keys)
 # Looking at nested hashtables
 $people
 
+
 $people | ConvertTo-Json
 
 # Creating arrays of hashtables
 $peopleArray = @(
     @{
         name = 'Kevin'
-        age  = 37
-        city = 'Irvine'
+        age  = 40
+        city = 'Bellevue'
     }
     @{
         name = 'Alex'
-        age  = 9
-        city = 'Irvine'
+        age  = 13
+        city = 'Bellevue'
     }
 )
 $peopleArray | ConvertTo-Json
@@ -161,13 +167,7 @@ $people | ConvertTo-JSON | Set-Content -Path $path
 $people = Get-Content -Path $path -Raw | ConvertFrom-JSON
 
 
-# Convert JSON to Hashtable (PS 5)
-[Reflection.Assembly]::LoadWithPartialName("System.Web.Script.Serialization")
-$JSSerializer = [System.Web.Script.Serialization.JavaScriptSerializer]::new()
-$JSSerializer.Deserialize($json, 'Hashtable')
-
-
-# Convert JSON to Hashtable (PS 6)
+# Convert JSON to Hashtable (PS 7)
 $json = $people | ConvertTo-JSON
 $hashtable = $json | ConvertFrom-Json -AsHashtable
 $hashtable

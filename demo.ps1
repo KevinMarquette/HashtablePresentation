@@ -3,7 +3,7 @@
 # Kevin Marquette
 # @KevinMarquette
 # KevMar@gmail.com
-# kevinmarquette.github.io
+# PowerShellExplained.com
 # github.com/kevinmarquette
 
 # general syntax

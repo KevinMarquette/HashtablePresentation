@@ -25,41 +25,48 @@ function test-param
     )
     if ($null -ne $First)
     {
-        "First has a value of $first"
+        "First has a value of [$First]"
     }
-    if ($null -ne $PSBoundParameters['First'])
+    if ($PSBoundParameters.ContainsKey('First'))
     {
-        "The passed in value of First is $First"
+        "The passed in value for First is [$First]"
     }
     else
     {
-        "No value was provided for first, using the default $First"
+        "No value was provided for first, using the default [$First]"
     }
 }
 
 Test-Param -First 90210
 Test-Param
+Test-Param -First $null
 
 
 # Proxy functions with PSBoundParameters
-function Get-ProxyWMIObject 
+function Get-ProxyCimInstance
 {
     [cmdletbinding()]
     param(
         $Class,
         $ComputerName
     )
-    Get-WmiObject @PSBoundParameters
+    Get-CimInstance @PSBoundParameters
 }
 
-Get-ProxyWMIObject  -Class WIN32_BIOS
+Get-ProxyCimInstance -Class Win32_BIOS
 
 
 # PSDefaultParameterValues
-$PSDefaultParameterValues[ "Connect-VIServer:Server" ] = 'VCENTER01.contoso.local'
-
 $PSDefaultParameterValues[ "Format-Table:AutoSize" ] = $true
 $PSDefaultParameterValues[ "Out-File:Encoding" ]     = "UTF8"
+$PSDefaultParameterValues[ "Connect-VIServer:Server" ] = 'VCENTER01.contoso.local'
+
+$PSDefaultParameterValues[ "Install-Module:Scope" ] = 'CurrentUser'
+$PSDefaultParameterValues[ "Install-Module:Force" ] = $true
+$PSDefaultParameterValues[ "Install-Module:AllowClobber" ] = $true
+$PSDefaultParameterValues[ "Install-Module:SkipPublisherCheck" ] = $true
+$PSDefaultParameterValues[ "Install-Module:AcceptLicense" ] = $true
+$PSDefaultParameterValues[ "Install-Module:Repository" ] = 'PSGallery'
 
 # With wildcards
 $PSDefaultParameterValues[ "Get-*:Verbose" ] = $true

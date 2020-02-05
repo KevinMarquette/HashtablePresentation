@@ -5,7 +5,7 @@ $array = @(10, 11, 12, 13, 15, 17, 19)
 $array[0]
 $array[1]
 
-$array | ForEach-Object {$_ * 2}
+$array | ForEach-Object {$PSItem * 2}
 
 $array[1] = 33
 $array[1]
@@ -36,11 +36,11 @@ $array[2]
 $ageList = @{}
 
 $key = 'Kevin'
-$value = 37
+$value = 40
 $ageList.add( $key, $value )
 $ageList
 
-$ageList.add( 'Alex', 9 )
+$ageList.add( 'Alex', 13 )
 
 $ageList.item('Kevin')
 
@@ -54,130 +54,138 @@ $ageList['Alex']
 $ageList = @{}
 
 $key = 'Kevin'
-$value = 37
+$value = 40
 $ageList[$key] = $value
 
-$ageList['Alex'] = 10
+$ageList['Alex'] = 13
 $ageList
 
 
 # Creating hashtables with values
-
 $ageList = @{
-    "Kevin" = 37
-    "Alex"  = 9
+    "Kevin" = 40
+    "Alex"  = 13
+}
+
+# Without using quotes for key names
+$ageList = @{
+    Kevin = 40
+    Alex  = 13
 }
 
 
 # As a lookup table
-$environments = @{
+$serverConfig = @{
     Prod = 'SrvProd05'
     QA   = 'SrvQA02'
     Dev  = 'SrvDev12'
 }
 
 $env = 'QA'
-$server = $environments[$env]
+$server = $serverConfig[$env]
 $server
 
 
 # Multi-selection
-$environments['DEV', 'QA']
+$serverConfig['DEV', 'QA']
 
 $env = 'DEV', 'QA'
-$environments[$env]
+$serverConfig[$env]
 
 # null value for misses
-$environments['MissingEnvironment'] -eq $null
+$null -eq $serverConfig['MissingEnvironment']
 
 
 # Iterating hashtables, walking the list
-$ageList = @{
-    "Kevin" = 37
-    "Alex"  = 9
-}
-
-$ageList | Measure-Object | 
-    Select-Object Count
-
-$ageList.Count
-    
-$ageList | Get-Member
-
-$agelist.Values
-
-$agelist.Keys
-
-# $PSItem is also $_
-$ageList.Keys | ForEach-Object {
-    '{0} is {1} years old!' -f $_, $ageList[$_]
-}
-
-foreach ($key in $ageList.Keys)
-{
-    '{0} is {1} years old' -f $key, $ageList[$key]
-}
-
-
-# GetEnumerator()
-$ageList.GetEnumerator() | Get-Member
-$ageList.GetEnumerator() | Measure-Object
-
-
-$ageList.GetEnumerator() | ForEach-Object {
-    '{0} is {1} years old!' -f $PSItem.key, $PSItem.value
-}
-
-foreach ( $enumerator in $ageList.GetEnumerator() )
-{
-    '{0} is {1} years old' -f $enumerator.key, $enumerator.value
-}
-
-# Bad Enumeration example: will throw error
-$environments = @{
+$serverConfig = @{
     Prod = 'SrvProd05'
     QA   = 'SrvQA02'
     Dev  = 'SrvDev12'
 }
 
-$environments.Keys | ForEach-Object {
-    $environments[$PSItem] = 'SrvDev03'
+$serverConfig | Measure-Object | 
+    Select-Object Count
+
+$serverConfig.Count
+    
+$serverConfig | Get-Member
+
+$serverConfig.Values
+
+$serverConfig.Keys
+
+# $PSItem is also $_
+$serverConfig.Keys | ForEach-Object {
+    '{0} server is {1}' -f $PSItem, $serverConfig[$PSItem]
+}
+
+foreach ($key in $serverConfig.Keys)
+{
+    '{0} server is {1}' -f $key, $serverConfig[$key]
+}
+
+
+# GetEnumerator()
+$serverConfig.GetEnumerator() | Get-Member
+$serverConfig.GetEnumerator() | Measure-Object | 
+    Select-Object Count
+
+
+$serverConfig.GetEnumerator() | ForEach-Object {
+    '{0} server is {1}' -f $PSItem.key, $PSItem.value
+}
+
+foreach ( $enumerator in $serverConfig.GetEnumerator() )
+{
+    '{0} server is {1}' -f $enumerator.key, $enumerator.value
+}
+
+# Bad Enumeration example: will throw error
+$serverConfig = @{
+    Prod = 'SrvProd05'
+    QA   = 'SrvQA02'
+    Dev  = 'SrvDev12'
+}
+
+$serverConfig.Keys | ForEach-Object {
+    $serverConfig[$PSItem] = 'SrvDev03'
 } 
 # An error occurred while enumerating through a collection: 
 # Collection was modified; enumeration operation may not execute.
 
-foreach ($key in $environments.Keys) 
+foreach ($key in $serverConfig.Keys) 
 {
-    $environments[$key] = 'SrvDev03'
+    $serverConfig[$key] = 'SrvDev03'
 } 
 # Collection was modified; enumeration operation may not execute.
 
 # Solution
-$environments.Keys.Clone() | ForEach-Object {
-    $environments[$PSItem] = 'SrvDev03'
+$serverConfig.Keys.Clone() | ForEach-Object {
+    $serverConfig[$PSItem] = 'SrvDev03'
 } 
 
-foreach ($key in $environments.Keys.Clone()) 
+foreach ($key in $serverConfig.Keys.Clone()) 
 {
-    $environments[$key] = 'SrvDev03'
+    $serverConfig[$key] = 'SrvDev03'
 } 
 
 
 # Hashtable as a collection of properties
 # property based access
 $ageList = @{}
-$ageList.Kevin = 37
-$ageList.Alex  = 9
+$ageList.Kevin = 40
+$ageList.Alex  = 13
 $ageList
 
 # new example
 $person = @{
     name = 'Kevin'
-    age  = 37
+    age  = 40
 }
 
-$person.city = 'Irvine'
-$person.state = 'CA'
+$person.city = 'Bellevue'
+$person.state = 'WA'
+$person
 
 # checking for keys and values
 if ( $person.age ) {'...'}
@@ -191,7 +199,7 @@ if ( $person.ContainsKey('age') ) {'...'}
 
 # removing keys
 $person.remove('age')
-
+$person
 
 # clearing keys
 $person = @{}

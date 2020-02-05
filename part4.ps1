@@ -1,6 +1,6 @@
 #region Data setup
 #https://github.com/dfinke/NameIT
-$count = 5
+$count = 50
 $names = Invoke-Generate "Server-###" -Count $count
 
 $ServerInfo = $names | % {
@@ -78,7 +78,7 @@ foreach ($server in $ServerInfo)
         Status       = $patchInfo.Status
         #...
     }
-} | Select TotalMilliseconds
+} 
 
 #region csv merge Measure-Command
 Measure-Command {
@@ -138,26 +138,6 @@ Measure-Command {
 
 #endregion
 
-#region getEnumerator() no measurable difference
-$batchSize = 100000
-$hashtable = @{}
-foreach ($num in 1..$batchSize)
-{
-    $hashtable[$num] = $num * 2
-}
-Measure-Command {
-    foreach ($key in $hashtable.Keys)
-    {
-        $hashtable[$key] 
-    }
-}
-Measure-Command {
-    foreach ($item in $hashtable.GetEnumerator())
-    {
-        $item.value
-    }
-}
-#endregion
 
 #region C# interop
 function test-function
@@ -170,3 +150,22 @@ function test-function
     #...
 }
 #endregion
+
+# Bonus / Edge cases
+
+# Why would I ever use the enumerator?
+#   When 'Keys' is a key
+$configData = @{
+    Keys = 'none'
+    Values = 'none'
+}
+
+foreach ($key in $configData.Keys)
+{
+    '[{0}] is [{1}]' -f $key, $configData[$key]
+}
+
+foreach ( $enumerator in $configData.GetEnumerator() )
+{
+    '[{0}] is [{1}]' -f $enumerator.key, $enumerator.value
+}
