@@ -29,7 +29,7 @@ function test-param
     }
     if ($PSBoundParameters.ContainsKey('First'))
     {
-        "The passed in value for First is [$First]"
+        "The passed in value for First is [{0}]" -f $PSBoundParameters.First
     }
     else
     {

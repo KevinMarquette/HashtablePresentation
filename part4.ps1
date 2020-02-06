@@ -1,6 +1,6 @@
 #region Data setup
 #https://github.com/dfinke/NameIT
-$count = 50
+$count = 5
 $names = Invoke-Generate "Server-###" -Count $count
 
 $ServerInfo = $names | % {
@@ -26,8 +26,8 @@ $ServerPatches = $names | % {
 #endregion
 
 #region Joining 2 CSVs
-$ServerInfo
-$ServerPatches
+$ServerInfo | Out-GridView
+$ServerPatches | Out-GridView
 
 foreach ($server in $ServerInfo)
 {

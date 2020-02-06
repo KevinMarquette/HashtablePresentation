@@ -7,7 +7,7 @@ $person = [ordered]@{
 
 
 # Inline
-$person = @{ name = 'Kevin'; age = 40; }
+$person = @{ name = 'Kevin'; age = 40 }
 
 
 # Custom expressions in common pipeline commands
@@ -15,17 +15,17 @@ Get-PSDrive | Where Used -OutVariable drives
 $drives | Get-Member
 $drives | Select-Object Name, @{
     name = 'totalSpaceGB'; 
-    expression = { ($_.used + $_.free) / 1GB }
+    expression = { ($_.used + $_.free) / 1GB}
 }
 
 
-# Expanded
-$property = @{
+# Calculated Property or Named Expression
+$totalSpaceGB = @{
     name       = 'totalSpaceGB'
     expression = { ($_.used + $_.free) / 1GB }
 }
 
-$drives | Select-Object Name, $property
+$drives | Select-Object Name, $totalSpaceGB
 
 
 # Splatting
@@ -57,6 +57,7 @@ if ($null -ne $Credential)
 }
 
 Get-CIMInstance @CIMParams
+
 
 
 # Adding hashtables (once)
@@ -102,6 +103,8 @@ $people.Kevin['city']
 $people['Alex'].age
 $people['Alex']['city']
 
+# Add this sooner
+$people | ConvertTo-Json
 
 # Walking the list
 foreach ($name in $people.keys)
@@ -197,6 +200,7 @@ $person.'full name'
 
 $key = 'full name'
 $person.$key
+$person[$key]
 
 
 # Pass by refference and Shallow copies

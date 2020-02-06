@@ -5,7 +5,7 @@ $array = @(10, 11, 12, 13, 15, 17, 19)
 $array[0]
 $array[1]
 
-$array | ForEach-Object {$PSItem * 2}
+$array | ForEach-Object {$_ * 2}
 
 $array[1] = 33
 $array[1]
@@ -77,7 +77,7 @@ $ageList = @{
 # As a lookup table
 $serverConfig = @{
     Prod = 'SrvProd05'
-    QA   = 'SrvQA02'
+    QA   = 'SrvQuality02'
     Dev  = 'SrvDev12'
 }
 
